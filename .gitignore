@@ -1,0 +1,30 @@
+# build
+bin/
+obj/
+publish/
+шаблоны/
+tz/
+docs/experiments/
+.vs/
+*.user
+*.suo
+*.cache
+
+# релизы (бинарные архивы) и окружения — не документация
+release/
+python-venv-contract-ner/
+*.zip
+
+# личные данные рядом с exe (карточки, роли, исполнители)
+user/
+
+# IDE / Cursor. Каталог .cursor/ игнорировать нельзя целиком:
+# git не заходит внутрь игнорируемой папки, и исключение rules не срабатывает.
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
+.claude/*
+# прочее
+**/__pycache__/
+*.pyc
+cursor_dialogue_restoration.md

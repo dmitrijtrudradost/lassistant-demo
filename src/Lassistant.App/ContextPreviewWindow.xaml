@@ -1,0 +1,19 @@
+<Window x:Class="Lassistant.App.ContextPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Контекст"
+        Icon="pack://application:,,,/Assets/lassistant.ico"
+        Height="640"
+        Width="760"
+        MinHeight="320"
+        MinWidth="480"
+        WindowStartupLocation="CenterOwner"
+        Background="#F7F7F5">
+    <RichTextBox x:Name="Viewer"
+                 IsReadOnly="True"
+                 IsDocumentEnabled="True"
+                 BorderThickness="0"
+                 Background="White"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Disabled"/>
+</Window>

@@ -1,0 +1,430 @@
+<UserControl x:Class="Lassistant.App.Controls.EntityReviewPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Lassistant.App.ViewModels">
+
+    <Grid Margin="0,8,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition x:Name="NerResultsRow" Height="*" MinHeight="160"/>
+            <RowDefinition x:Name="ResultsSplitterRow" Height="0"/>
+            <RowDefinition x:Name="ColoredResultsRow" Height="0"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Зона перетаскивания файла -->
+        <Border Grid.Row="0"
+                x:Name="TemplateDropZone"
+                BorderBrush="#888"
+                BorderThickness="2"
+                CornerRadius="8"
+                Background="#F7F7F7"
+                Padding="16"
+                AllowDrop="True"
+                Margin="0,0,0,10">
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock Text="Перетащите договор .docx"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+                <TextBlock FontSize="11" Foreground="#666" HorizontalAlignment="Center" Margin="0,4,0,0"
+                           Text="Локальная NER модель → ревью ролей → шаблон {{роль}}. Данные не отправляются в интернет."/>
+                <TextBlock Text="{Binding SourceFilePath}"
+                           Visibility="{Binding SourceFilePath, Converter={StaticResource StringNotEmptyToVisibility}}"
+                           HorizontalAlignment="Center"
+                           Margin="0,4,0,0"
+                           TextWrapping="Wrap"
+                           Foreground="#333"/>
+                <Button Content="Выбрать файл…"
+                        Click="BrowseFile_Click"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Таблица локального NER -->
+        <DockPanel Grid.Row="1" Margin="0,0,0,8">
+            <TextBlock DockPanel.Dock="Top"
+                       Text="Локальная NER модель (роли → {{плейсхолдер}})"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,4"/>
+            <Border DockPanel.Dock="Top"
+                    BorderBrush="#D5D5D5"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Background="#FAFAFA"
+                    Padding="8"
+                    Margin="0,0,0,6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                        <TextBlock Text="Режим обработки"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,3"/>
+                        <ComboBox ItemsSource="{Binding NerProcessingModes}"
+                                  SelectedItem="{Binding SelectedNerProcessingMode, Mode=TwoWay}"
+                                  DisplayMemberPath="Title"
+                                  ToolTip="Выберите глубину обработки результатов локальной NER."/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                        <TextBlock Text="Минимальная уверенность"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,3"/>
+                        <ComboBox ItemsSource="{Binding NerScoreThresholds}"
+                                  SelectedItem="{Binding SelectedNerScoreThreshold, Mode=TwoWay}"
+                                  DisplayMemberPath="DisplayName"
+                                  ToolTip="Фрагменты с меньшей уверенностью не попадут в таблицу. 0,00 отключает отсечение."/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="{Binding SelectedNerProcessingMode.Title}"
+                                   FontWeight="SemiBold"
+                                   Foreground="#333"/>
+                        <TextBlock Text="{Binding SelectedNerProcessingMode.Description}"
+                                   TextWrapping="Wrap"
+                                   Foreground="#666"
+                                   FontSize="11"
+                                   Margin="0,3,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            <DataGrid ItemsSource="{Binding NerEntities}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserResizeRows="True"
+                      HeadersVisibility="Column"
+                      IsReadOnly="False"
+                      EnableRowVirtualization="True"
+                      RowHeight="28"
+                      GridLinesVisibility="Horizontal">
+                <DataGrid.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#90EE90"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#90EE90"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="#000000"/>
+                </DataGrid.Resources>
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Padding" Value="4,0"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="DataGridCell">
+                                    <Border Padding="{TemplateBinding Padding}"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            SnapsToDevicePixels="True">
+                                        <ContentPresenter VerticalAlignment="Center"
+                                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#90EE90"/>
+                                <Setter Property="Foreground" Value="#000000"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.CellStyle>
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="MinHeight" Value="28"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsLowConfidence}" Value="True">
+                                <Setter Property="Background" Value="#FFF4CE"/>
+                                <Setter Property="ToolTip"
+                                        Value="Низкая уверенность NER: проверьте значение и поставьте галочку вручную."/>
+                            </DataTrigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#90EE90"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Binding="{Binding IsAccepted, UpdateSourceTrigger=PropertyChanged}"
+                                            Width="58">
+                        <DataGridCheckBoxColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="Все"
+                                          IsThreeState="True"
+                                          IsChecked="{Binding DataContext.AllNerAccepted,
+                                              RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                              Mode=TwoWay,
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                          ToolTip="Выбрать или снять все строки NER."/>
+                            </DataTemplate>
+                        </DataGridCheckBoxColumn.HeaderTemplate>
+                    </DataGridCheckBoxColumn>
+                    <DataGridTemplateColumn Header="Роль / ключ"
+                                            Width="200"
+                                            SortMemberPath="EditableRole"
+                                            CanUserSort="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding EditableRole}"
+                                           VerticalAlignment="Center"
+                                           Margin="4,0"
+                                           ToolTip="Выберите роль из списка модели или пункт «добавить новую»."/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding DataContext.NerRoleOptions,
+                                              RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                          IsEditable="True"
+                                          StaysOpenOnEdit="True"
+                                          SelectedItem="{Binding EditableRole,
+                                              Mode=TwoWay,
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                          Text="{Binding EditableRole,
+                                              Mode=TwoWay,
+                                              UpdateSourceTrigger=LostFocus}"
+                                          ToolTip="Список ролей NER. «Добавить новую» или свой ключ — затем Да/Нет для записи в placeholder-roles.json."/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Итоговый текст"
+                                        Binding="{Binding EditableText, UpdateSourceTrigger=PropertyChanged}"
+                                        Width="180"
+                                        ToolTipService.ToolTip="Можно исправить границы, введя точный фрагмент из контекста."/>
+                    <DataGridTemplateColumn Header="Контекст"
+                                            Width="320"
+                                            IsReadOnly="True"
+                                            SortMemberPath="ContextPreview"
+                                            CanUserSort="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding ContextPreview, Mode=OneWay}"
+                                         IsReadOnly="True"
+                                         IsReadOnlyCaretVisible="True"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         TextWrapping="NoWrap"
+                                         VerticalAlignment="Stretch"
+                                         VerticalContentAlignment="Center"
+                                         Margin="0"
+                                         Padding="2,0"
+                                         MinHeight="0"
+                                         Cursor="IBeam"
+                                         PreviewMouseDoubleClick="NerContext_MouseDoubleClick"
+                                         ToolTip="Двойной щелчок открывает весь текст договора с подсветкой фрагмента. Короткую строку можно выделить и скопировать через Ctrl+C.">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="Margin" Value="0"/>
+                                            <Setter Property="Padding" Value="2,0"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridCell}}"
+                                                             Value="True">
+                                                    <Setter Property="Foreground" Value="#000000"/>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Уверенность"
+                                        Binding="{Binding ScoreDisplay}"
+                                        SortMemberPath="Score"
+                                        Width="110"
+                                        IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Сторона"
+                                        Binding="{Binding PartyDisplay}"
+                                        Width="90"
+                                        IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="Причина"
+                                            Width="135">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CorrectionReason}"
+                                           Margin="0"
+                                           Padding="0"
+                                           VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding CorrectionReasonOptions}"
+                                          SelectedItem="{Binding CorrectionReason,
+                                              Mode=TwoWay,
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                          IsEditable="False"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Комментарий"
+                                        Binding="{Binding Comment, UpdateSourceTrigger=PropertyChanged}"
+                                        Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+
+        <GridSplitter Grid.Row="2"
+                      x:Name="ResultsSplitter"
+                      Height="6"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Center"
+                      ResizeDirection="Rows"
+                      ResizeBehavior="PreviousAndNext"
+                      Background="#D0D0D0"
+                      Cursor="SizeNS"
+                      ToolTip="Перетащите вверх или вниз, чтобы изменить высоту таблиц."
+                      Visibility="Collapsed"/>
+
+        <!-- DataGrid со строками цветовых выделений -->
+        <DockPanel Grid.Row="3"
+                   x:Name="ColoredResultsPanel"
+                   Margin="0,0,0,8"
+                   Visibility="Collapsed">
+            <TextBlock DockPanel.Dock="Top"
+                       Text="Цветные выделения"
+                       FontWeight="SemiBold"
+                       Foreground="#666"
+                       Margin="0,0,0,4"/>
+            <DataGrid x:Name="EntitiesGrid"
+                      ItemsSource="{Binding Entities}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      HeadersVisibility="Column"
+                      IsReadOnly="False"
+                      EnableRowVirtualization="True">
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="{Binding ColorBrush}"/>
+                    </Style>
+                </DataGrid.RowStyle>
+
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Binding="{Binding IsAccepted, UpdateSourceTrigger=PropertyChanged}"
+                                            Width="58">
+                        <DataGridCheckBoxColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <CheckBox Content="Все"
+                                          IsThreeState="True"
+                                          IsChecked="{Binding DataContext.AllColoredAccepted,
+                                              RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                              Mode=TwoWay,
+                                              UpdateSourceTrigger=PropertyChanged}"
+                                          ToolTip="Выбрать или снять все цветные выделения."/>
+                            </DataTemplate>
+                        </DataGridCheckBoxColumn.HeaderTemplate>
+                    </DataGridCheckBoxColumn>
+                    <DataGridTextColumn Header="Текст выделения"
+                                        Binding="{Binding EditableText, UpdateSourceTrigger=PropertyChanged}"
+                                        Width="180"
+                                        SortMemberPath="EditableText"
+                                        CanUserSort="True"
+                                        ToolTipService.ToolTip="Можно уточнить текст выделения перед сохранением шаблона."/>
+                    <DataGridTextColumn Header="Авто-предложение"
+                                        Binding="{Binding SuggestedPlaceholder}"
+                                        Width="120"
+                                        IsReadOnly="True"/>
+                    <DataGridTemplateColumn Header="Ключ плейсхолдера"
+                                            Width="180"
+                                            SortMemberPath="EditablePlaceholder"
+                                            CanUserSort="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding EditablePlaceholder}"
+                                           VerticalAlignment="Center"
+                                           Margin="4,0"
+                                           ToolTip="Роли NER-модели. Пункт «добавить новую» — свой ключ."/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <ComboBox
+                                    ItemsSource="{Binding DataContext.NerRoleOptions,
+                                                 RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                    IsEditable="True"
+                                    StaysOpenOnEdit="True"
+                                    SelectedItem="{Binding EditablePlaceholder,
+                                                    Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged}"
+                                    Text="{Binding EditablePlaceholder,
+                                           Mode=TwoWay,
+                                           UpdateSourceTrigger=LostFocus}"
+                                    ToolTip="Список ролей NER. «Добавить новую» или свой ключ — затем Да/Нет для записи в placeholder-roles.json."/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Контекст"
+                                            Width="*"
+                                            IsReadOnly="True"
+                                            SortMemberPath="ContextPreview"
+                                            CanUserSort="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding ContextPreview, Mode=OneWay}"
+                                         IsReadOnly="True"
+                                         IsReadOnlyCaretVisible="True"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         TextWrapping="NoWrap"
+                                         VerticalAlignment="Stretch"
+                                         VerticalContentAlignment="Center"
+                                         Margin="0"
+                                         Padding="2,0"
+                                         MinHeight="0"
+                                         Cursor="IBeam"
+                                         ToolTip="Выделите фрагмент мышью и скопируйте через Ctrl+C или контекстное меню.">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="Margin" Value="0"/>
+                                            <Setter Property="Padding" Value="2,0"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridCell}}"
+                                                             Value="True">
+                                                    <Setter Property="Foreground" Value="#000000"/>
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+
+        <!-- Нижняя панель: статус + кнопки (высота кнопок фиксирована, не растягивается) -->
+        <DockPanel Grid.Row="4" LastChildFill="True" VerticalAlignment="Center">
+            <StackPanel DockPanel.Dock="Right"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <Button Content="Найти сведения"
+                        Click="AnalyzeNer_Click"
+                        IsEnabled="{Binding CanAnalyzeNer}"
+                        Margin="0,0,8,0"
+                        Padding="10,6"
+                        VerticalAlignment="Center"
+                        FontWeight="SemiBold"
+                        ToolTip="Программа найдёт в договоре стороны, объект, цену, сроки и реквизиты. Файл остаётся на этом компьютере."/>
+                <Button Content="Сохранить шаблон"
+                        Click="SaveTemplate_Click"
+                        IsEnabled="{Binding CanOperate}"
+                        Padding="12,6"
+                        VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBlock Text="{Binding StatusMessage}"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis"
+                       VerticalAlignment="Center"
+                       MaxHeight="36"
+                       ToolTip="{Binding StatusMessage}"/>
+        </DockPanel>
+    </Grid>
+</UserControl>

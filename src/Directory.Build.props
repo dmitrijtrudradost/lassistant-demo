@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <Version>1.6.6.2</Version>
+    <AssemblyVersion>1.6.6.2</AssemblyVersion>
+    <FileVersion>1.6.6.2</FileVersion>
+    <InformationalVersion>1.6.6.2</InformationalVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'Lassistant.App'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="$([System.String]::Copy('$(TargetFramework)').Contains('-windows'))">
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+</Project>

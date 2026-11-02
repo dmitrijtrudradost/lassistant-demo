@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Установка Lassistant 1.6.4 на удалённый компьютер (Windows 10)</title>
+<style>
+:root { color-scheme: light; }
+@page { margin: 16mm; }
+body{font-family:'Segoe UI',Arial,sans-serif;font-size:11pt;line-height:1.5;
+color:#222;background:#fff;margin:0;padding:24px 16px;}
+main{max-width:900px;margin:0 auto;}
+h1{font-size:22pt;margin:0 0 14px;}
+h2{font-size:15pt;margin:26px 0 10px;border-bottom:1px solid #ccc;padding-bottom:4px;}
+h3{font-size:12.5pt;margin:18px 0 6px;}
+h4{font-size:11.5pt;margin:14px 0 6px;}
+p{margin:8px 0;}
+table{border-collapse:collapse;width:100%;margin:10px 0 16px;}
+th,td{border:1px solid #bbb;padding:6px 9px;text-align:left;vertical-align:top;}
+th{background:#f3f3f3;}
+code{font-family:Consolas,'Courier New',monospace;font-size:9.5pt;
+background:#f4f4f4;border:1px solid #e2e2e2;border-radius:3px;padding:0 3px;}
+pre{font-family:Consolas,'Courier New',monospace;font-size:9.5pt;background:#f6f6f6;
+border:1px solid #ddd;padding:10px;overflow-x:auto;}
+pre code{background:none;border:none;padding:0;}
+ul,ol{margin:8px 0 12px;padding-left:26px;}
+li{margin:4px 0;}
+li > ul, li > ol{margin:4px 0;}
+ul.task{list-style:none;padding-left:4px;}
+hr{border:none;border-top:1px solid #ccc;margin:22px 0;}
+a{color:#14568c;}
+blockquote{margin:10px 0;padding:6px 12px;border-left:3px solid #ccc;color:#444;}
+@media print{body{padding:0;} a{color:#222;text-decoration:none;}}
+</style>
+</head><body><main>
+<h1>Установка Lassistant 1.6.4 на удалённый компьютер (Windows 10)</h1>
+<p><strong>Продукт:</strong> Lassistant — Помощник юриста<br><strong>Версия:</strong> <strong>1.6.4</strong><br><strong>Модуль NER:</strong> <strong>1.1.1</strong> (<code>ner_model_1.1</code>; откат <code>ner_model_1.0</code>)<br><strong>Платформа:</strong> Windows 10 (1809+) x64 (также Windows 11 x64)<br><strong>Архив поставки:</strong> <code>release/Lassistant_v1.6.4_win-x64.zip</code><br><strong>Дата инструкции:</strong> 23.09.2026</p>
+<p>Инструкция для переноса готовой сборки на другой ПК (удалённый рабочий стол, флешка, сетевая папка) и настройки модулей, включая локальный NER.</p>
+<p>Версия для чтения в браузере и печати: <code>docs\руководства\INSTALL_v1.6.4.html</code>.</p>
+<hr>
+<h2>0. Краткий порядок действий</h2>
+<ol>
+<li>Скопировать на удалённый ПК архив <code>Lassistant_v1.6.4_win-x64.zip</code>.
+</li>
+<li>Распаковать целиком в постоянную папку.
+</li>
+<li>Запустить <code>Lassistant.exe</code> → <strong>«О программе»</strong> или <strong>Настройки → Общие</strong>: версия <strong>1.6.4</strong>.
+</li>
+<li>Для <strong>«Шаблоны»</strong> / <strong>«Анонимизация»</strong>: установить Python 3.12 (или 3.11) и создать <code>python-venv-contract-ner</code> (раздел <strong>5</strong>).
+</li>
+<li>Проверить NER на тестовом <code>.docx</code>.
+</li>
+</ol>
+<p><strong>Пример рабочей папки:</strong><br><code>C:\Program Files (x86)\Lassistant\Lassistant_v1.6.4_win-x64</code></p>
+<hr>
+<h2>1. Что входит в поставку</h2>
+<p><code>Lassistant_v1.6.4_win-x64.zip</code> → после распаковки <code>Lassistant_v1.6.4_win-x64\</code></p>
+<table>
+<tr><th>Путь</th><th>Назначение</th></tr>
+<tr><td><code>Lassistant.exe</code></td><td>Приложение (self-contained, .NET 8 <strong>встроен</strong>)</td></tr>
+<tr><td><code>config\</code></td><td>Каталог документов, канон исполнителей, <code>contract-ner.json</code>, роли NER</td></tr>
+<tr><td><code>models\contract-ner\ner_model_1.1\</code></td><td>Модель по умолчанию (пакет 1.1.1)</td></tr>
+<tr><td><code>models\contract-ner\ner_model_1.0\</code></td><td>Откат</td></tr>
+<tr><td><code>scripts\contract_ner\</code></td><td>Python-скрипты инференса и постобработки</td></tr>
+<tr><td><code>templates\</code></td><td>Шаблоны договоров <code>.docx</code></td></tr>
+<tr><td><code>docs\руководства\</code></td><td>Эта инструкция, руководство пользователя, словарь полей</td></tr>
+<tr><td><code>docs\правила\</code></td><td>Канон ролей NER (<code>ROLE_SCHEMA_v1.1.1.md</code>)</td></tr>
+</table>
+<p><strong>Не входят в zip / не копируются publish:</strong> папка <strong><code>user\</code></strong> (создаётся при первом запуске). В поставку <strong>не</strong> кладутся <code>docs\изменения</code>, <code>docs\realese_history</code>, CHANGELOG.</p>
+<p><strong>Отдельно ставить .NET Runtime / SDK не нужно.</strong></p>
+<p>В эту сборку входят:</p>
+<ul>
+<li>личные данные в <code>user\</code> (роли, карточки, overlay исполнителей) — <strong>не затираются</strong> повторным publish / обновлением файлов программы;
+</li>
+<li>«Создать документ»: поля исполнителя с выбранной карточки + плейсхолдеры шаблона; имя файла и красная заливка пустых <code>{{ключ}}</code>.
+</li>
+</ul>
+<hr>
+<h2>2. Требования к удалённому ПК</h2>
+<table>
+<tr><th>Требование</th><th>Значение</th></tr>
+<tr><td>ОС</td><td>Windows 10 <strong>1809+</strong> или Windows 11, <strong>x64</strong></td></tr>
+<tr><td>Разрядность</td><td>Только 64-bit</td></tr>
+<tr><td>Место на диске</td><td>Ориентир <strong>2–4 ГБ</strong> (приложение + модель + Python venv с torch)</td></tr>
+<tr><td>Права</td><td>Для папки в <code>Program Files (x86)</code> — <strong>cmd от имени администратора</strong> при создании venv</td></tr>
+<tr><td>Сеть</td><td>Для копирования архива; для NER — <strong>один раз</strong> интернет (Python и <code>pip install</code>)</td></tr>
+<tr><td>Python (для NER)</td><td><strong>3.11 или 3.12, 64-bit</strong> (проверено: <strong>Python 3.12.8</strong>)</td></tr>
+<tr><td>OCR (опционально)</td><td>Русский языковой пакет Windows OCR — для сканов/фото</td></tr>
+</table>
+<p>Без Python работает: <strong>«Создать документ»</strong>.<br>С Python/venv: <strong>«Шаблоны»</strong>, <strong>«Анонимизация»</strong>.</p>
+<hr>
+<h2>3. Перенос архива на удалённый компьютер</h2>
+<h3>3.1. Курьер / флешка / внешний диск</h3>
+<ol>
+<li>На исходном ПК: <code>…\agent_sosdat_dogovor\release\Lassistant_v1.6.4_win-x64.zip</code>
+</li>
+<li>Скопируйте на носитель.
+</li>
+<li>На удалённом ПК скопируйте zip к месту установки.
+</li>
+</ol>
+<h3>3.2. Сетевая папка / RDP</h3>
+<p>Скопируйте zip <strong>локально</strong> (не запускайте exe с сетевого диска без необходимости).</p>
+<h3>3.3. Проверка целостности (рекомендуется)</h3>
+<pre><code>
+Get-Item &quot;C:\Users\Public\Downloads\Lassistant_v1.6.4_win-x64.zip&quot; |
+  Select-Object FullName, Length, LastWriteTime
+</code></pre>
+<hr>
+<h2>4. Установка приложения (без .NET)</h2>
+<ol>
+<li>Закройте старые окна Lassistant.
+</li>
+<li>Распакуйте архив в постоянную папку, например:
+<ul>
+<li><code>C:\Program Files (x86)\Lassistant\Lassistant_v1.6.4_win-x64\</code>
+</li>
+<li><code>C:\Lassistant\</code>
+</li>
+</ul>
+</li>
+<li><strong>Не разделяйте</strong> содержимое: рядом с exe должны быть <code>config</code>, <code>models</code>, <code>scripts</code>, <code>templates</code>, <code>docs</code>.
+</li>
+<li>Запуск: <code>Lassistant.exe</code>.
+</li>
+<li>Проверка: <strong>«О программе»</strong> → <strong>Версия: 1.6.4</strong> или <strong>Настройки → Общие</strong>.
+</li>
+</ol>
+<p>При первом запуске создаётся <code>user\</code> (настройки, роли, карточки заказчика).</p>
+<p>SmartScreen: «Подробнее» → «Выполнить в любом случае» / исключение антивируса.</p>
+<hr>
+<h2>5. Установка Contract NER (проверенный сценарий)</h2>
+<p>Рабочая папка-пример:<br><code>C:\Program Files (x86)\Lassistant\Lassistant_v1.6.4_win-x64</code></p>
+<h3>5.1. Python: что не сработало / что сработало</h3>
+<p><strong>winget</strong> часто отсутствует — для Lassistant не обязателен.</p>
+<p>Не склеивайте <code>curl</code> и установщик в одну строку без <code>&amp;&amp;</code> / Enter (ошибка <code>Could not resolve host: InstallAllUsers=1</code>).</p>
+<h3>5.2. Скачать установщик Python 3.12 (cmd)</h3>
+<pre><code>
+curl -L -o &quot;%TEMP%\python312.exe&quot; https://www.python.org/ftp/python/3.12.8/python-3.12.8-amd64.exe
+dir &quot;%TEMP%\python312.exe&quot;
+</code></pre>
+<p>Файл должен быть <strong>десятки мегабайт</strong>, не ~146 байт. Иначе скачайте в браузере:<br><a href="https://www.python.org/ftp/python/3.12.8/python-3.12.8-amd64.exe">https://www.python.org/ftp/python/3.12.8/python-3.12.8-amd64.exe</a></p>
+<h3>5.3. Тихая установка Python</h3>
+<pre><code>
+&quot;%TEMP%\python312.exe&quot; /quiet InstallAllUsers=1 PrependPath=1 Include_test=0
+</code></pre>
+<p>Закройте cmd, откройте <strong>новое</strong>:</p>
+<pre><code>
+python --version
+</code></pre>
+<p>Ожидается <code>Python 3.12.8</code> (допустимы 3.11.x / другие 3.12.x).</p>
+<h3>5.4. Создание venv и зависимостей NER</h3>
+<p>Папка в <code>Program Files (x86)</code>: <strong>cmd от имени администратора</strong>.</p>
+<pre><code>
+cd /d &quot;C:\Program Files (x86)\Lassistant\Lassistant_v1.6.4_win-x64\scripts\contract_ner&quot;
+python -m venv ..\..\python-venv-contract-ner
+..\..\python-venv-contract-ner\Scripts\pip install -U pip
+..\..\python-venv-contract-ner\Scripts\pip install -r requirements-infer.txt
+</code></pre>
+<p>Последняя команда может идти <strong>10–30 минут</strong>. Итог: рядом с exe папка <code>python-venv-contract-ner\Scripts\python.exe</code>.</p>
+<p>Если приложение в <code>C:\Lassistant\</code>:</p>
+<pre><code>
+cd /d C:\Lassistant\scripts\contract_ner
+python -m venv ..\..\python-venv-contract-ner
+..\..\python-venv-contract-ner\Scripts\pip install -U pip
+..\..\python-venv-contract-ner\Scripts\pip install -r requirements-infer.txt
+</code></pre>
+<h3>5.5. Проверка состава NER</h3>
+<ul class='task'>
+<li>☐ <code>models\contract-ner\ner_model_1.1\</code> (веса, config, tokenizer, <code>labels.json</code>)
+</li>
+<li>☐ <code>models\contract-ner\ner_model_1.0\</code> (откат)
+</li>
+<li>☐ <code>scripts\contract_ner\</code>
+</li>
+<li>☐ <code>config\contract-ner.json</code>
+</li>
+<li>☐ <code>python-venv-contract-ner\Scripts\python.exe</code>
+</li>
+</ul>
+<p>Каталог модели выбирается в <strong>Настройки → NER</strong>.</p>
+<h3>5.6. Проверка в приложении</h3>
+<ol>
+<li><code>Lassistant.exe</code>
+</li>
+<li><strong>«О программе»</strong> / <strong>Настройки → Общие</strong> → <strong>1.6.4</strong>, версия модуля NER (например 1.1.1)
+</li>
+<li><strong>«Шаблоны»</strong> или <strong>«Анонимизация»</strong> → договор <code>.docx</code> → разобрать NER
+</li>
+<li>Первый запуск: 1–2 минуты
+</li>
+</ol>
+<p>Если «Модуль NER не установлен» — venv должен лежать <strong>рядом с exe</strong>.</p>
+<hr>
+<h2>6. Что умеет каждая вкладка после установки</h2>
+<table>
+<tr><th>Вкладка / кнопка</th><th>Нужен Python/NER</th><th>Назначение</th></tr>
+<tr><td>Создать документ</td><td>Нет</td><td>Шаблоны, карточка исполнителя, заливка пустых <code>{{ключ}}</code></td></tr>
+<tr><td>Анонимизация</td><td>Да</td><td>NER → <code>{{роль}}</code> + mapping</td></tr>
+<tr><td>Шаблоны</td><td>Да</td><td>NER → шаблон <code>{{роль}}</code></td></tr>
+<tr><td>Настройки</td><td>Нет</td><td>Версии, модель NER, пути <code>user\</code>, исполнители</td></tr>
+</table>
+<hr>
+<h2>7. Обновление с 1.6.3 / 1.6.1 / 1.5.4.x</h2>
+<ol>
+<li>Закройте все окна Lassistant.
+</li>
+<li>Распакуйте 1.6.4 в <strong>новую</strong> папку <strong>или</strong> замените файлы программы (exe, <code>config</code>, <code>models</code>, <code>scripts</code>, <code>templates</code>, <code>docs</code>).
+</li>
+<li><strong>Не копируйте поверх</strong> существующую папку <strong><code>user\</code></strong> с другого ПК и не удаляйте её при обновлении файлов поставки — там роли, карточки, ваши исполнители.
+</li>
+<li><code>python-venv-contract-ner</code> можно оставить, если Python тот же; при ошибках — удалите venv и повторите §5.4.
+</li>
+<li>Свои правки <code>templates\</code> сохраните заранее.
+</li>
+<li><code>config\executors.json</code> из интерфейса больше не перезаписывается; личные карточки — в <code>user\settings\executors.json</code>.
+</li>
+</ol>
+<p>Старые карточки из <code>data\заказчики</code> при первом запуске (начиная с 1.6.3) копируются в <code>user\data\заказчики</code>, если там ещё нет одноимённых файлов.</p>
+<hr>
+<h2>8. Типичные проблемы на удалённом ПК</h2>
+<table>
+<tr><th>Проблема</th><th>Что сделать</th></tr>
+<tr><td><code>winget</code> не найден</td><td>Нормально; Python через curl или браузер</td></tr>
+<tr><td><code>curl: malformed</code> / <code>host: InstallAllUsers=1</code></td><td>Две команды склеены — выполните отдельно</td></tr>
+<tr><td><code>python312.exe</code> ~146 байт</td><td>Скачивание не удалось</td></tr>
+<tr><td>В «О программе» не 1.6.4</td><td>Старый ярлык — проверьте путь к exe</td></tr>
+<tr><td><code>python</code> не находится</td><td>Новый терминал; <code>PrependPath=1</code></td></tr>
+<tr><td>Отказ создать venv в Program Files</td><td>cmd <strong>от имени администратора</strong></td></tr>
+<tr><td>«Модуль NER не установлен»</td><td>Нет venv рядом с exe или нет <code>ner_model_1.1</code></td></tr>
+<tr><td>Скопировали только exe</td><td>Нужен <strong>весь</strong> архив</td></tr>
+<tr><td>Запуск с <code>\\сервер\…</code></td><td>Скопируйте на диск C:/D:</td></tr>
+<tr><td>Пропали роли / карточки после обновления</td><td>Должна остаться папка <code>user\</code> рядом с exe</td></tr>
+</table>
+<hr>
+<h2>9. Контрольный список приёмки</h2>
+<ul class='task'>
+<li>☐ Распакован полный <code>Lassistant_v1.6.4_win-x64</code>
+</li>
+<li>☐ «О программе» / Настройки → Общие: версия <strong>1.6.4</strong>
+</li>
+<li>☐ Появилась папка <code>user\</code>
+</li>
+<li>☐ <code>python --version</code> — 3.11+ / 3.12.x
+</li>
+<li>☐ Рядом с exe: <code>python-venv-contract-ner\Scripts\python.exe</code>
+</li>
+<li>☐ <code>pip install -r requirements-infer.txt</code> без ошибки
+</li>
+<li>☐ «Разобрать NER» на тестовом договоре работает
+</li>
+<li>☐ «О программе»: открываются руководство и словарь из <code>docs\руководства</code>
+</li>
+</ul>
+<hr>
+<h2>10. Где лежат файлы на машине разработки</h2>
+<table>
+<tr><th>Артефакт</th><th>Путь</th></tr>
+<tr><td>Архив для передачи</td><td><code>release\Lassistant_v1.6.4_win-x64.zip</code></td></tr>
+<tr><td>Эта инструкция</td><td><code>docs\руководства\INSTALL_v1.6.4.md</code></td></tr>
+<tr><td>Руководство</td><td><code>docs\руководства\rukovodstvo_polzovatelya.md</code></td></tr>
+<tr><td>Словарь полей</td><td><code>docs\руководства\slovar_poley_shablona.html</code></td></tr>
+<tr><td>Канон ролей</td><td><code>docs\правила\ROLE_SCHEMA_v1.1.1.md</code></td></tr>
+<tr><td>Описание релиза</td><td><code>docs\realese_history\RELEASE_v1.6.4.md</code></td></tr>
+</table>
+<hr>
+<h2>11. Шпаргалка команд</h2>
+<pre><code>
+curl -L -o &quot;%TEMP%\python312.exe&quot; https://www.python.org/ftp/python/3.12.8/python-3.12.8-amd64.exe
+dir &quot;%TEMP%\python312.exe&quot;
+&quot;%TEMP%\python312.exe&quot; /quiet InstallAllUsers=1 PrependPath=1 Include_test=0
+</code></pre>
+<p>(новый cmd → <code>python --version</code>)</p>
+<pre><code>
+cd /d &quot;C:\Program Files (x86)\Lassistant\Lassistant_v1.6.4_win-x64\scripts\contract_ner&quot;
+python -m venv ..\..\python-venv-contract-ner
+..\..\python-venv-contract-ner\Scripts\pip install -U pip
+..\..\python-venv-contract-ner\Scripts\pip install -r requirements-infer.txt
+</code></pre>
+<hr>
+<p><em>Конец инструкции. HTML-версия собирается командой <code>python scripts/md_to_html.py docs/руководства/INSTALL_v1.6.4.md</code>.</em></p>
+</main></body></html>

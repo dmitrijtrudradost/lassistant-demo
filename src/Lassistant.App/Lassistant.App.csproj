@@ -1,0 +1,89 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.17763.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\lassistant.ico</ApplicationIcon>
+    <RootNamespace>Lassistant.App</RootNamespace>
+    <AssemblyName>Lassistant</AssemblyName>
+    <Version>1.6.6.2</Version>
+    <AssemblyVersion>1.6.6.2</AssemblyVersion>
+    <FileVersion>1.6.6.2</FileVersion>
+    <InformationalVersion>1.6.6.2</InformationalVersion>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\lassistant.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lassistant.Core\Lassistant.Core.csproj" />
+    <ProjectReference Include="..\Lassistant.Extractors\Lassistant.Extractors.csproj" />
+    <ProjectReference Include="..\Lassistant.Templates\Lassistant.Templates.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="..\..\config\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>config\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+    <None Update="..\..\templates\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+    <None Update="..\..\scripts\ner_helper.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>scripts\ner_helper.py</Link>
+    </None>
+    <None Update="..\..\scripts\contract_ner\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>scripts\contract_ner\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+    <None Update="..\..\config\label-prefix-map.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>config\label-prefix-map.json</Link>
+    </None>
+    <None Update="..\..\config\contract-ner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>config\contract-ner.json</Link>
+    </None>
+  </ItemGroup>
+
+  <!-- РџРѕР»РЅС‹Р№ РєРѕРјРїР»РµРєС‚ РїРѕСЃС‚Р°РІРєРё: СЌС‚Рё РІРЅРµС€РЅРёРµ РєР°С‚Р°Р»РѕРіРё РґРѕР»Р¶РЅС‹ РїРѕРїР°РґР°С‚СЊ РЅРµ С‚РѕР»СЊРєРѕ
+       РІ bin/, РЅРѕ Рё РІ dotnet publish Р±РµР· СЂСѓС‡РЅРѕРіРѕ xcopy. -->
+  <ItemGroup>
+    <Content Include="..\..\config\**\*"
+             Link="config\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\templates\**\*"
+             Link="templates\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\scripts\ner_helper.py"
+             Link="scripts\ner_helper.py"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\scripts\contract_ner\**\*"
+             Exclude="..\..\scripts\contract_ner\**\__pycache__\**;..\..\scripts\contract_ner\**\*.pyc"
+             Link="scripts\contract_ner\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\models\contract-ner\**\*"
+             Link="models\contract-ner\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\docs\руководства\**\*"
+             Link="docs\руководства\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\..\docs\правила\**\*"
+             Link="docs\правила\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

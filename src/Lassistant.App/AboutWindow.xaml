@@ -1,0 +1,54 @@
+<Window x:Class="Lassistant.App.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="О программе"
+        Icon="pack://application:,,,/Assets/lassistant.ico"
+        Width="540"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#F7F7F5">
+  <Grid Margin="16">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <StackPanel Grid.Row="0">
+      <TextBlock x:Name="ProductText"
+                 FontSize="18"
+                 FontWeight="SemiBold"
+                 TextWrapping="Wrap"/>
+      <TextBlock x:Name="VersionText"
+                 Margin="0,8,0,0"/>
+      <TextBlock x:Name="NerVersionText"
+                 Margin="0,4,0,0"/>
+      <TextBlock TextWrapping="Wrap"
+                 Foreground="#555"
+                 Margin="0,10,0,0"
+                 Text="Документы и карточки обрабатываются на этом компьютере, без отправки в интернет."/>
+    </StackPanel>
+
+    <Border Grid.Row="1"
+            Background="#EEECEA"
+            CornerRadius="6"
+            Padding="12"
+            Margin="0,16,0,0">
+      <StackPanel>
+        <TextBlock Text="Документация" FontWeight="SemiBold"/>
+        <StackPanel x:Name="DocsPanel" Margin="0,8,0,0"/>
+      </StackPanel>
+    </Border>
+
+    <Button Grid.Row="2"
+            Content="Закрыть"
+            IsDefault="True"
+            IsCancel="True"
+            HorizontalAlignment="Right"
+            MinWidth="96"
+            Margin="0,16,0,0"
+            Click="Close_Click"/>
+  </Grid>
+</Window>

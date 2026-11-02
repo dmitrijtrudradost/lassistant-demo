@@ -1,0 +1,12 @@
+{
+  "name": "NER-модель для извлечения ролевых атрибутов",
+  "version": "1.1.1",
+  "base_weights": "1.1.0",
+  "date": "2026-08-26",
+  "changes": "Track 1 schema/PP/templates without retrain: role remaps, address naming, muni placeholder fix",
+  "product_target": "Помощник юриста 1.6.1",
+  "labels_file": "labels.json",
+  "postprocess": "ner_training/postprocess.py ROLE_CANONICAL_REMAP",
+  "schema": "ner_training/ROLE_SCHEMA_v1.1.1.md",
+  "known_issues": ["party confusion on OGRN/KPP/OKPO/OKVED until v1.2 structural prior"]
+}

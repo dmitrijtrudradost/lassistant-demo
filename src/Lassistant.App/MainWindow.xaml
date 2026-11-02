@@ -1,0 +1,459 @@
+﻿<Window x:Class="Lassistant.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="clr-namespace:Lassistant.Core.Models;assembly=Lassistant.Core"
+        xmlns:controls="clr-namespace:Lassistant.App.Controls"
+        Title="Lassistant — Помощник юриста"
+        Icon="pack://application:,,,/Assets/lassistant.ico"
+        Height="820"
+        Width="900"
+        MinHeight="640"
+        MinWidth="600"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="16,4,16,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,0,0,4">
+            <Button Content="Настройки"
+                    Click="Settings_Click"
+                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                    Foreground="#333"
+                    Cursor="Hand"
+                    VerticalAlignment="Center"
+                    Margin="8,0,0,0"/>
+            <Button Content="О программе"
+                    Click="About_Click"
+                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                    Foreground="#0066CC"
+                    Cursor="Hand"
+                    VerticalAlignment="Center"
+                    Margin="8,0,0,0"/>
+        </StackPanel>
+
+        <TabControl Grid.Row="1">
+            <TabItem Header="Создать документ">
+                <Grid Margin="0,8,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0"
+                            x:Name="DropZone"
+                            BorderBrush="#888"
+                            BorderThickness="2"
+                            CornerRadius="8"
+                            Background="#F7F7F7"
+                            Padding="16"
+                            AllowDrop="True">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="Перетащите сюда файлы"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Excel (.xlsx), Word (.docx), PDF, фото паспорта, карточка заказчика (.md)"
+                                       FontSize="11"
+                                       Foreground="#666"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,4,0,0"/>
+                            <Button Content="Выбрать файлы..."
+                                    Click="BrowseFiles_Click"
+                                    IsEnabled="{Binding CanImportFiles}"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ScrollViewer Grid.Row="1" Margin="0,16,0,16" VerticalScrollBarVisibility="Auto">
+                        <StackPanel DataContext="{Binding}">
+                            <TextBlock Text="Загруженные файлы" FontWeight="SemiBold"/>
+                            <ItemsControl ItemsSource="{Binding LoadedFiles}" Margin="0,4,0,12">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" Margin="0,2"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Text="Запись из Excel" FontWeight="SemiBold"
+                                       Visibility="{Binding HasExcelRows, Converter={StaticResource BoolToVisibility}}"/>
+                            <ComboBox ItemsSource="{Binding ExcelRows}"
+                                      SelectedItem="{Binding SelectedExcelRow, Mode=TwoWay}"
+                                      DisplayMemberPath="DisplayName"
+                                      Margin="0,4,0,12"
+                                      Visibility="{Binding HasExcelRows, Converter={StaticResource BoolToVisibility}}"/>
+
+                            <TextBlock Text="Тип документа" FontWeight="SemiBold"/>
+                            <ComboBox ItemsSource="{Binding DocumentKindOptions}"
+                                      SelectedValue="{Binding SelectedDocumentKind, Mode=TwoWay}"
+                                      SelectedValuePath="Value"
+                                      DisplayMemberPath="DisplayName"
+                                      Margin="0,4,0,8"/>
+
+                            <UniformGrid Columns="2" Margin="0,0,0,8">
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="Тип клиента" FontWeight="SemiBold"/>
+                                    <ComboBox ItemsSource="{Binding ClientTypeOptions}"
+                                              SelectedValue="{Binding SelectedClientType, Mode=TwoWay}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Margin="0,4,0,0"/>
+                                </StackPanel>
+                                <StackPanel Margin="8,0,0,0">
+                                    <TextBlock Text="Вид услуги" FontWeight="SemiBold"/>
+                                    <ComboBox ItemsSource="{Binding ServiceOptions}"
+                                              SelectedValue="{Binding SelectedServiceKind, Mode=TwoWay}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="DisplayName"
+                                              Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </UniformGrid>
+
+                            <TextBlock Text="Исполнитель" FontWeight="SemiBold"/>
+                            <ComboBox ItemsSource="{Binding ExecutorOptions}"
+                                      SelectedItem="{Binding SelectedExecutor, Mode=TwoWay}"
+                                      DisplayMemberPath="DisplayName"
+                                      Margin="0,4,0,8"
+                                      ToolTip="Карточка исполнителя из справочника (до 3). Реквизиты подставляются в поля исполнитель_*."/>
+
+                            <TextBlock Text="{Binding SelectedDocumentTitle}"
+                                       FontWeight="SemiBold"
+                                       Foreground="#333"
+                                       Margin="0,0,0,12"/>
+
+                            <ItemsControl ItemsSource="{Binding FieldGroups}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,16">
+                                            <TextBlock Text="{Binding Label}" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,8"/>
+                                            <ItemsControl ItemsSource="{Binding SubGroups}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Margin="0,0,0,10">
+                                                            <TextBlock Text="{Binding Label}"
+                                                                       FontWeight="SemiBold"
+                                                                       Foreground="#555"
+                                                                       FontSize="12"
+                                                                       Margin="0,0,0,4"/>
+                                                            <ItemsControl ItemsSource="{Binding Fields}">
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <StackPanel Margin="0,0,0,6">
+                                                                            <TextBlock Text="{Binding DisplayLabel}"/>
+                                                                            <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                                                                     IsReadOnly="{Binding IsReadOnly}"
+                                                                                     AcceptsReturn="{Binding IsMultiline}"
+                                                                                     TextWrapping="{Binding IsMultiline,
+                                                                                         Converter={StaticResource BoolToTextWrapping}}"
+                                                                                     Height="{Binding IsMultiline,
+                                                                                         Converter={StaticResource BoolToHeight},
+                                                                                         ConverterParameter=72}"
+                                                                                     VerticalScrollBarVisibility="{Binding IsMultiline,
+                                                                                         Converter={StaticResource BoolToScrollBarVisibility}}"
+                                                                                     VerticalContentAlignment="Top"/>
+                                                                        </StackPanel>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <TextBlock Grid.Row="2"
+                               Text="{Binding ValidationSummary}"
+                               Foreground="#B00020"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,8"/>
+
+                    <DockPanel Grid.Row="3" LastChildFill="True">
+                        <Button Content="Создать документ"
+                                Click="GenerateDocument_Click"
+                                DockPanel.Dock="Right"
+                                Padding="12,6"
+                                Margin="8,0,0,0"/>
+                        <Button Content="Обновить карточку заказчика"
+                                Click="UpdateCustomerCard_Click"
+                                DockPanel.Dock="Right"
+                                Padding="12,6"
+                                ToolTip="Сохранить в карточку поля заказчик_*, договора и объекта (data/заказчики/*.md)"/>
+                        <TextBlock Text="{Binding StatusMessage}"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"/>
+                    </DockPanel>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Анонимизация">
+                <Grid Margin="0,8,0,0" DataContext="{Binding NerAnonymization}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0"
+                            x:Name="NerAnonDropZone"
+                            BorderBrush="#888"
+                            BorderThickness="2"
+                            CornerRadius="8"
+                            Background="#F7F7F7"
+                            Padding="16"
+                            AllowDrop="True"
+                            Margin="0,0,0,10">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="Перетащите договор .docx"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock FontSize="11" Foreground="#666" HorizontalAlignment="Center" Margin="0,4,0,0"
+                                       Text="Локальная NER модель → плейсхолдеры {{роль}} → mapping для восстановления."/>
+                            <TextBlock Text="{Binding SourceFilePath}"
+                                       Visibility="{Binding SourceFilePath, Converter={StaticResource StringNotEmptyToVisibility}}"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,4,0,0"
+                                       TextWrapping="Wrap"
+                                       Foreground="#333"/>
+                            <Button Content="Выбрать файл…"
+                                    Click="BrowseNerAnonymizationFile_Click"
+                                    IsEnabled="{Binding CanOperate}"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Row="1"
+                            BorderBrush="#D5D5D5"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Background="#FAFAFA"
+                            Padding="8"
+                            Margin="0,0,0,8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="250"/>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                <TextBlock Text="Режим обработки" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                <ComboBox ItemsSource="{Binding NerProcessingModes}"
+                                          SelectedItem="{Binding SelectedNerProcessingMode, Mode=TwoWay}"
+                                          DisplayMemberPath="Title"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                                <TextBlock Text="Минимальная уверенность" FontWeight="SemiBold" Margin="0,0,0,3"/>
+                                <ComboBox ItemsSource="{Binding NerScoreThresholds}"
+                                          SelectedItem="{Binding SelectedNerScoreThreshold, Mode=TwoWay}"
+                                          DisplayMemberPath="DisplayName"
+                                          ToolTip="Фрагменты с меньшей уверенностью не попадут в таблицу. 0,00 отключает отсечение."/>
+                            </StackPanel>
+                            <Button Grid.Column="2"
+                                    Content="Найти сведения"
+                                    Click="AnalyzeNerAnonymization_Click"
+                                    IsEnabled="{Binding CanAnalyzeNer}"
+                                    VerticalAlignment="Bottom"
+                                    Padding="12,6"
+                                    Margin="0,0,12,0"
+                                    ToolTip="Программа найдёт в договоре стороны, объект, цену, сроки и реквизиты. Файл остаётся на этом компьютере."/>
+                            <TextBlock Grid.Column="3"
+                                       Text="{Binding SelectedNerProcessingMode.Description}"
+                                       TextWrapping="Wrap"
+                                       Foreground="#666"
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <DataGrid Grid.Row="2"
+                              ItemsSource="{Binding NerEntities}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserResizeRows="True"
+                              HeadersVisibility="Column"
+                              IsReadOnly="False"
+                              EnableRowVirtualization="True"
+                              RowHeight="20"
+                              BorderBrush="#C8C8C8"
+                              BorderThickness="1"
+                              GridLinesVisibility="All"
+                              HorizontalGridLinesBrush="#C8C8C8"
+                              VerticalGridLinesBrush="#C8C8C8"
+                              Margin="0,0,0,8">
+                        <DataGrid.Resources>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#90EE90"/>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#000000"/>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#90EE90"/>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="#000000"/>
+                        </DataGrid.Resources>
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Padding" Value="2,0"/>
+                                <Setter Property="BorderBrush" Value="#C8C8C8"/>
+                                <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="DataGridCell">
+                                            <Border Padding="{TemplateBinding Padding}"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    SnapsToDevicePixels="True">
+                                                <ContentPresenter VerticalAlignment="Center"
+                                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#90EE90"/>
+                                        <Setter Property="Foreground" Value="#000000"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="MinHeight" Value="20"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsLowConfidence}" Value="True">
+                                        <Setter Property="Background" Value="#FFF4CE"/>
+                                    </DataTrigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#90EE90"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Binding="{Binding IsAccepted, UpdateSourceTrigger=PropertyChanged}"
+                                                    Width="58">
+                                <DataGridCheckBoxColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Content="Все"
+                                                  IsThreeState="True"
+                                                  IsChecked="{Binding DataContext.AllNerAccepted,
+                                                      RelativeSource={RelativeSource AncestorType={x:Type DataGrid}},
+                                                      Mode=TwoWay,
+                                                      UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </DataGridCheckBoxColumn.HeaderTemplate>
+                            </DataGridCheckBoxColumn>
+                            <DataGridTemplateColumn Header="Роль / ключ"
+                                                    Width="200"
+                                                    SortMemberPath="EditableRole"
+                                                    CanUserSort="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding EditableRole}" VerticalAlignment="Center" Margin="4,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding DataContext.NerRoleOptions,
+                                                      RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
+                                                  IsEditable="True"
+                                                  StaysOpenOnEdit="True"
+                                                  SelectedItem="{Binding EditableRole, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  Text="{Binding EditableRole, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Итоговый текст"
+                                                Binding="{Binding EditableText, UpdateSourceTrigger=PropertyChanged}"
+                                                Width="180"/>
+                            <DataGridTemplateColumn Header="Контекст"
+                                                    Width="*"
+                                                    IsReadOnly="True"
+                                                    SortMemberPath="ContextPreview"
+                                                    CanUserSort="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding ContextPreview, Mode=OneWay}"
+                                                 IsReadOnly="True"
+                                                 IsReadOnlyCaretVisible="True"
+                                                 BorderThickness="0"
+                                                 Background="Transparent"
+                                                 TextWrapping="NoWrap"
+                                                 VerticalAlignment="Stretch"
+                                                 VerticalContentAlignment="Center"
+                                                 Margin="0"
+                                                 Padding="2,0"
+                                                 MinHeight="0"
+                                                 Cursor="IBeam"
+                                                 PreviewMouseDoubleClick="NerContext_MouseDoubleClick"
+                                                 ToolTip="Двойной щелчок открывает весь текст договора с подсветкой фрагмента. Короткую строку можно выделить и скопировать через Ctrl+C.">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="Margin" Value="0"/>
+                                                    <Setter Property="Padding" Value="2,0"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridCell}}"
+                                                                     Value="True">
+                                                            <Setter Property="Foreground" Value="#000000"/>
+                                                            <Setter Property="Background" Value="Transparent"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Уверенность"
+                                                Binding="{Binding ScoreDisplay}"
+                                                SortMemberPath="Score"
+                                                Width="110"
+                                                IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <DockPanel Grid.Row="3" LastChildFill="True">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="Анонимизировать"
+                                    Click="AnonymizeNerAnonymization_Click"
+                                    IsEnabled="{Binding CanAnonymize}"
+                                    Margin="0,0,8,0"
+                                    Padding="12,6"/>
+                            <Button Content="Сохранить"
+                                    Click="SaveNerAnonymization_Click"
+                                    IsEnabled="{Binding CanSave}"
+                                    Margin="0,0,8,0"
+                                    Padding="12,6"/>
+                            <Button Content="Восстановить из mapping…"
+                                    Click="RestoreNerAnonymization_Click"
+                                    IsEnabled="{Binding CanOperate}"
+                                    Padding="12,6"/>
+                        </StackPanel>
+                        <TextBlock Text="{Binding StatusMessage}"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,12,0"/>
+                    </DockPanel>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Шаблоны">
+                <controls:EntityReviewPanel DataContext="{Binding Templates}"/>
+            </TabItem>
+
+        </TabControl>
+    </Grid>
+</Window>

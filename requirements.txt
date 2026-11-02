@@ -1,0 +1,7 @@
+# LamaraWord — зависимости Python-скриптов (scripts/)
+#
+# Скрипты generate_templates.py и generate_excel_template.py используют
+# только стандартную библиотеку Python (zipfile, pathlib).
+# Сторонние пакеты не требуются.
+#
+# Минимальная версия Python: 3.8

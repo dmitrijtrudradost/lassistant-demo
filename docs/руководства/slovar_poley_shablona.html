@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Помощник юриста — словарь полей шаблона</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #fff;
+      --text: #1a1a1a;
+      --muted: #555;
+      --accent: #00468c;
+      --border: #d8dee8;
+      --code-bg: #eef3fa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg);
+      margin: 0;
+      padding: 24px;
+      max-width: 960px;
+      margin-inline: auto;
+    }
+    header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+    h1 { margin: 0 0 8px; font-size: 1.5rem; color: var(--accent); }
+    .subtitle { color: var(--muted); margin: 0; }
+    .notice {
+      background: #fff8e6;
+      border: 1px solid #f0d78c;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+    .notice strong { color: #8a6116; }
+    .notice ul { margin: 8px 0 0; padding-left: 1.2rem; }
+    h2 {
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin: 28px 0 10px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--accent);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 8px;
+      font-size: 0.92rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th { background: #e8eef6; font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #fafbfc; }
+    code.copy {
+      display: inline-block;
+      background: var(--code-bg);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.88rem;
+      cursor: pointer;
+      user-select: all;
+    }
+    code.copy:hover { background: #dce8f8; }
+    footer {
+      margin-top: 32px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .notice { break-inside: avoid; }
+      table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Помощник юриста — словарь полей шаблона Word</h1>
+    <p class="subtitle">Версия продукта 1.6.5.2 · NER 1.1.1 · 76 канонических ролей · папка <code>templates\</code></p>
+  </header>
+
+  <div class="notice">
+    <strong>Правила для юриста при правке шаблона</strong>
+    <ul>
+      <li>В Word вставляйте ключ <strong>целиком</strong> в фигурных скобках, например <code>{{номер_договора}}</code> — скопируйте из таблицы.</li>
+      <li>Не перепечатывайте ключ по буквам и не ставьте пробелы внутри: <code>{{ номер_договора }}</code> — неправильно.</li>
+      <li>Канон ролей: <code>docs\правила\ROLE_SCHEMA_v1.1.1.md</code>. Старые имена после постобработки NER приводятся к канону (таблица ниже).</li>
+      <li>Поля карточки исполнителя сверх этого списка тоже подставляются, если в DOCX есть такой <code>{{ключ}}</code>.</li>
+    </ul>
+  </div>
+
+  <h2>Устаревшее имя → канон</h2>
+  <table>
+    <thead>
+      <tr><th>Было</th><th>Стало (вставляйте это)</th></tr>
+    </thead>
+    <tbody>
+    <tr><td><code>заказчик_адрес</code></td><td><code class="copy">{{заказчик_адрес_юридический}}</code></td></tr>
+    <tr><td><code>заказчик_почтовый_адрес</code></td><td><code class="copy">{{заказчик_адрес_почтовый}}</code></td></tr>
+    <tr><td><code>исполнитель_директор_фио</code></td><td><code class="copy">{{исполнитель_директор_фио_падеж}}</code></td></tr>
+    <tr><td><code>исполнитель_почтовый_адрес</code></td><td><code class="copy">{{исполнитель_адрес_почтовый}}</code></td></tr>
+    <tr><td><code>исполнитель_юридический_адрес</code></td><td><code class="copy">{{исполнитель_адрес_юридический}}</code></td></tr>
+    <tr><td><code>объект_тип</code></td><td><code class="copy">{{объект_наименование}}</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Договор и служебные</h2>
+  <table>
+    <thead><tr><th>Поле</th><th>Ключ в шаблоне</th></tr></thead>
+    <tbody>
+    <tr>
+      <td>Дата договора</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{дата_договора}}</code></td>
+    </tr>
+    <tr>
+      <td>Договор штраф сумма</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{договор_штраф_сумма}}</code></td>
+    </tr>
+    <tr>
+      <td>Идентификационный код закупки</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{идентификационный_код_закупки}}</code></td>
+    </tr>
+    <tr>
+      <td>Номер договора</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{номер_договора}}</code></td>
+    </tr>
+
+    </tbody>
+  </table>
+
+  <h2>Заказчик</h2>
+  <table>
+    <thead><tr><th>Поле</th><th>Ключ в шаблоне</th></tr></thead>
+    <tbody>
+    <tr>
+      <td>Заказчик email</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_email}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик web</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_web}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик адрес почтовый</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_адрес_почтовый}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик адрес юридический</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_адрес_юридический}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик банк</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_банк}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик бик</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_бик}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик дата огрнип</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_дата_огрнип}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик дата рождения</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_дата_рождения}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик должность</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_должность}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик должность падеж</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_должность_падеж}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик инн</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_инн}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик источник финансирования</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_источник_финансирования}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик корр счет</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_корр_счет}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик кпп</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_кпп}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик наименование</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_наименование}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик наименование кратко</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_наименование_кратко}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик наименование кратко падеж</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_наименование_кратко_падеж}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик наименование падеж</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_наименование_падеж}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик огрн</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_огрн}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик огрнип</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_огрнип}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик окато</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_окато}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик оквэд</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_оквэд}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик окпо</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_окпо}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик паспорт</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_паспорт}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик расчетный счет</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_расчетный_счет}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик телефон</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_телефон}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик телефон 2</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_телефон_2}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик фио</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_фио}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик фио кратко</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_фио_кратко}}</code></td>
+    </tr>
+    <tr>
+      <td>Заказчик фио падеж</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{заказчик_фио_падеж}}</code></td>
+    </tr>
+
+    </tbody>
+  </table>
+
+  <h2>Исполнитель</h2>
+  <table>
+    <thead><tr><th>Поле</th><th>Ключ в шаблоне</th></tr></thead>
+    <tbody>
+    <tr>
+      <td>Исполнитель email</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_email}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель адрес почтовый</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_адрес_почтовый}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель адрес юридический</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_адрес_юридический}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель банк</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_банк}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель бик</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_бик}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель город банка</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_город_банка}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель дата лицензии</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_дата_лицензии}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель директор фио кратко</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_директор_фио_кратко}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель директор фио падеж</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_директор_фио_падеж}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель инн</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_инн}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель корр счет</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_корр_счет}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель кпп</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_кпп}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель лицензия кем выдана</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_лицензия_кем_выдана}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель наименование</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_наименование}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель наименование кратко</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_наименование_кратко}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель номер лицензии</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_номер_лицензии}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель огрн</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_огрн}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель окато</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_окато}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель оквэд</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_оквэд}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель окопф</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_окопф}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель окпо</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_окпо}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель октмо</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_октмо}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель расчетный счет</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_расчетный_счет}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель срок действия лицензии</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_срок_действия_лицензии}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель старый номер лицензии</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_старый_номер_лицензии}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель телефон</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_телефон}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель телефон дежурного</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_телефон_дежурного}}</code></td>
+    </tr>
+    <tr>
+      <td>Исполнитель фио кратко</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{исполнитель_фио_кратко}}</code></td>
+    </tr>
+
+    </tbody>
+  </table>
+
+  <h2>Объект</h2>
+  <table>
+    <thead><tr><th>Поле</th><th>Ключ в шаблоне</th></tr></thead>
+    <tbody>
+    <tr>
+      <td>Объект адрес</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{объект_адрес}}</code></td>
+    </tr>
+    <tr>
+      <td>Объект дата отключения</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{объект_дата_отключения}}</code></td>
+    </tr>
+    <tr>
+      <td>Объект дата подключения</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{объект_дата_подключения}}</code></td>
+    </tr>
+    <tr>
+      <td>Объект наименование</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{объект_наименование}}</code></td>
+    </tr>
+    <tr>
+      <td>Объект номер пульта</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{объект_номер_пульта}}</code></td>
+    </tr>
+    <tr>
+      <td>Объект телефон</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{объект_телефон}}</code></td>
+    </tr>
+    <tr>
+      <td>Объект уполномоч лицо телефон</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{объект_уполномоч_лицо_телефон}}</code></td>
+    </tr>
+    <tr>
+      <td>Объект уполномоч лицо фио</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{объект_уполномоч_лицо_фио}}</code></td>
+    </tr>
+
+    </tbody>
+  </table>
+
+  <h2>Цена</h2>
+  <table>
+    <thead><tr><th>Поле</th><th>Ключ в шаблоне</th></tr></thead>
+    <tbody>
+    <tr>
+      <td>Цена ндс прописью</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{цена_ндс_прописью}}</code></td>
+    </tr>
+    <tr>
+      <td>Цена ндс числом 1</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{цена_ндс_числом_1}}</code></td>
+    </tr>
+    <tr>
+      <td>Цена прописью</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{цена_прописью}}</code></td>
+    </tr>
+    <tr>
+      <td>Цена услуги прописью 1</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{цена_услуги_прописью_1}}</code></td>
+    </tr>
+    <tr>
+      <td>Цена услуги прописью 2</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{цена_услуги_прописью_2}}</code></td>
+    </tr>
+    <tr>
+      <td>Цена числом</td>
+      <td><code class="copy" title="Нажмите, чтобы выделить">{{цена_числом}}</code></td>
+    </tr>
+
+    </tbody>
+  </table>
+
+  <footer>
+    Помощник юриста 1.6.5.2 · Локальная генерация · руководство: <code>docs\руководства\rukovodstvo_polzovatelya.md</code>
+  </footer>
+  <script>
+    document.querySelectorAll('code.copy').forEach(el => {
+      el.addEventListener('click', () => {
+        const r = document.createRange();
+        r.selectNodeContents(el);
+        const s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(r);
+      });
+    });
+  </script>
+</body>
+</html>

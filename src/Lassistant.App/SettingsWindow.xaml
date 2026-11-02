@@ -1,0 +1,222 @@
+<Window x:Class="Lassistant.App.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Настройки"
+        Icon="pack://application:,,,/Assets/lassistant.ico"
+        Height="580"
+        Width="720"
+        MinHeight="480"
+        MinWidth="640"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResizeWithGrip"
+        Background="#F7F7F5">
+  <Grid Margin="16">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <TabControl Grid.Row="0" Padding="12,10">
+      <TabItem Header="Общие">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <TextBlock Text="Помощник юриста"
+                       FontSize="18"
+                       FontWeight="SemiBold"/>
+            <TextBlock TextWrapping="Wrap"
+                       Foreground="#555"
+                       Margin="0,8,0,0"
+                       Text="Документы и карточки обрабатываются на этом компьютере, без отправки в интернет. Это помогает соблюдать 152-ФЗ «О персональных данных»."/>
+            <Border Background="#EEECEA"
+                    CornerRadius="6"
+                    Padding="12"
+                    Margin="0,16,0,0">
+              <StackPanel>
+                <TextBlock Text="Данные о ПО" FontWeight="SemiBold"/>
+                <TextBlock x:Name="AppVersionText"
+                           Margin="0,8,0,4"/>
+                <TextBlock x:Name="AppNerVersionText"/>
+              </StackPanel>
+            </Border>
+            <Border Background="#EEECEA"
+                    CornerRadius="6"
+                    Padding="12"
+                    Margin="0,16,0,0">
+              <StackPanel>
+                <TextBlock Text="Личные данные (не затираются обновлением)"
+                           FontWeight="SemiBold"/>
+                <TextBlock x:Name="UserRootHint"
+                           TextWrapping="Wrap"
+                           Foreground="#444"
+                           Margin="0,6,0,10"/>
+                <StackPanel Orientation="Horizontal">
+                  <Button Content="Открыть папку user"
+                          Click="OpenUserFolder_Click"/>
+                  <Button Content="Открыть папку программы"
+                          Click="OpenAppFolder_Click"/>
+                </StackPanel>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="NER">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <TextBlock Text="Настройки локальной NER-модели"
+                       FontSize="16"
+                       FontWeight="SemiBold"/>
+            <TextBlock Text="NER-модель для извлечения ролевых атрибутов"
+                       Foreground="#555"
+                       Margin="0,4,0,14"
+                       TextWrapping="Wrap"/>
+
+            <TextBlock Text="Версия пакета NER" FontWeight="SemiBold"/>
+            <TextBlock x:Name="ModelVersionText"
+                       Margin="0,4,0,14"
+                       FontSize="15"/>
+
+            <TextBlock Text="Каталог модели" FontWeight="SemiBold"/>
+            <ComboBox x:Name="ModelCombo"
+                      Margin="0,4,0,4"
+                      MinHeight="28"/>
+            <TextBlock x:Name="ModelPathHint"
+                       Foreground="#666"
+                       FontSize="11"
+                       Margin="0,0,0,14"
+                       TextWrapping="Wrap"/>
+
+            <TextBlock Text="Минимальная уверенность" FontWeight="SemiBold"/>
+            <ComboBox x:Name="MinScoreCombo"
+                      Margin="0,4,0,14"
+                      MinHeight="28"
+                      DisplayMemberPath="DisplayName"/>
+
+            <TextBlock Text="Автопринятие по уверенности" FontWeight="SemiBold"/>
+            <ComboBox x:Name="AutoAcceptCombo"
+                      Margin="0,4,0,0"
+                      MinHeight="28"
+                      DisplayMemberPath="DisplayName"/>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="Пользователь">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
+
+          <StackPanel Grid.Row="0">
+            <TextBlock Text="Пути к личным файлам"
+                       FontWeight="SemiBold"
+                       FontSize="15"/>
+            <TextBlock Text="Файл ролей (обратная связь для обучения модели)"
+                       Margin="0,10,0,0"/>
+            <DockPanel LastChildFill="True" Margin="0,4,0,0">
+              <Button DockPanel.Dock="Right" Content="Обзор…" Click="BrowseRolesFile_Click" Margin="8,0,0,0"/>
+              <TextBox x:Name="RolesPathBox"/>
+            </DockPanel>
+
+            <TextBlock Text="Папка карточек заказчика" Margin="0,10,0,0"/>
+            <DockPanel LastChildFill="True" Margin="0,4,0,8">
+              <Button DockPanel.Dock="Right" Content="Обзор…" Click="BrowseCardsFolder_Click" Margin="8,0,0,0"/>
+              <TextBox x:Name="CardsPathBox"/>
+            </DockPanel>
+          </StackPanel>
+
+          <Border Grid.Row="1"
+                  BorderBrush="#DDD"
+                  BorderThickness="1"
+                  CornerRadius="6"
+                  Padding="10"
+                  Background="#FAFAF8">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+              </Grid.RowDefinitions>
+
+              <TextBlock Grid.ColumnSpan="2"
+                         Text="Исполнители"
+                         FontWeight="SemiBold"/>
+              <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,8,10,0">
+                <TextBlock Text="Режим" FontSize="12" Foreground="#555"/>
+                <RadioButton x:Name="ModeMergeRadio"
+                             Content="Дополнить поставку"
+                             GroupName="ExecMode"
+                             Margin="0,4,0,0"
+                             IsChecked="True"/>
+                <RadioButton x:Name="ModeUserOnlyRadio"
+                             Content="Только мои"
+                             GroupName="ExecMode"
+                             Margin="0,4,0,8"/>
+                <ListBox x:Name="ExecutorsList"
+                         DisplayMemberPath="DisplayName"
+                         SelectionChanged="ExecutorsList_SelectionChanged"/>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                  <Button Content="Добавить" Click="AddExecutor_Click" Padding="8,4"/>
+                  <Button Content="Удалить" Click="DeleteExecutor_Click" Padding="8,4"/>
+                </StackPanel>
+              </StackPanel>
+
+              <DockPanel Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top">
+                  <TextBlock Text="Код (id)"/>
+                  <TextBox x:Name="ExecutorIdBox"/>
+                  <TextBlock Text="Название"/>
+                  <TextBox x:Name="ExecutorNameBox"/>
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,8,0,0">
+                  <Button Content="Добавить поле" Click="AddFieldRow_Click" Padding="8,4"/>
+                  <Button Content="Удалить поле" Click="DeleteFieldRow_Click" Padding="8,4"/>
+                </StackPanel>
+                <DataGrid x:Name="ExecutorFieldsGrid"
+                          Margin="0,8,0,0"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          HeadersVisibility="Column"
+                          MinHeight="120"
+                          SelectionMode="Single">
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="Поле" Binding="{Binding Key, UpdateSourceTrigger=LostFocus}" Width="*"/>
+                    <DataGridTextColumn Header="Значение" Binding="{Binding Value, UpdateSourceTrigger=LostFocus}" Width="*"/>
+                  </DataGrid.Columns>
+                </DataGrid>
+              </DockPanel>
+
+              <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,10,0,0">
+                <Button Content="Сохранить исполнителя"
+                        Click="SaveExecutor_Click"/>
+                <Button Content="Сбросить моих исполнителей"
+                        Click="ResetUserExecutors_Click"/>
+              </StackPanel>
+            </Grid>
+          </Border>
+        </Grid>
+      </TabItem>
+    </TabControl>
+
+    <DockPanel Grid.Row="1" LastChildFill="False" Margin="0,12,0,0">
+      <Button Content="Отмена"
+              Width="100"
+              Margin="0,0,8,0"
+              IsCancel="True"
+              Click="Cancel_Click"
+              DockPanel.Dock="Right"/>
+      <Button Content="Сохранить"
+              Width="110"
+              IsDefault="True"
+              Click="Save_Click"
+              DockPanel.Dock="Right"/>
+    </DockPanel>
+  </Grid>
+</Window>

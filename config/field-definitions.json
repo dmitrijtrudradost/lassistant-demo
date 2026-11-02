@@ -1,0 +1,105 @@
+{
+  "fields": {
+    "FullName":            { "label": "ФИО",                                     "placeholder": "фио",                   "validator": "none" },
+    "PassportSeries":      { "label": "Серия документа",                          "placeholder": "серия_документа",       "validator": "documentId" },
+    "PassportNumber":      { "label": "Номер документа",                          "placeholder": "номер_документа",       "validator": "documentId" },
+    "PassportIssuedBy":    { "label": "Кем выдан",                               "placeholder": "кем_выдан",             "validator": "none" },
+    "PassportIssueDate":   { "label": "Дата выдачи",                             "placeholder": "дата_выдачи",           "validator": "date" },
+    "PassportDeptCode":    { "label": "Код документа / подразделения",           "placeholder": "код_документа",         "validator": "none" },
+    "RegistrationAddress": { "label": "Адрес регистрации",                       "placeholder": "адрес_регистрации",     "validator": "none" },
+    "Inn":                 { "label": "ИНН",                                      "placeholder": "инн",                   "validator": "inn" },
+    "Ogrnip":              { "label": "ОГРНИП",                                   "placeholder": "огрнип",                "validator": "ogrnip" },
+    "IpName":              { "label": "Наименование ИП",                         "placeholder": "наименование_ип",       "validator": "none" },
+    "CompanyName":         { "label": "Наименование организации",                "placeholder": "наименование_орг",      "validator": "none" },
+    "Ogrn":                { "label": "ОГРН",                                     "placeholder": "огрн",                  "validator": "ogrn" },
+    "Kpp":                 { "label": "КПП",                                      "placeholder": "кпп",                   "validator": "kpp" },
+    "LegalAddress":        { "label": "Юридический адрес (каждая строка с новой строки)", "placeholder": "юр_адрес",     "validator": "none" },
+    "DirectorTitle":       { "label": "Должность подписанта",                    "placeholder": "должность",             "validator": "none" },
+    "DirectorFullName":    { "label": "ФИО подписанта",                          "placeholder": "фио_подписанта",        "validator": "none" },
+    "AuthorityBasis":      { "label": "Основание полномочий",                    "placeholder": "основание",             "validator": "none" },
+    "BankAccount":         { "label": "Расчётный счёт",                          "placeholder": "расчетный_счет",        "validator": "none" },
+    "BankBik":             { "label": "БИК",                                      "placeholder": "бик",                   "validator": "none" },
+    "BankName":            { "label": "Банк",                                     "placeholder": "банк",                  "validator": "none" },
+    "CorrespondentAccount":{ "label": "Корр. счёт",                              "placeholder": "корр_счет",             "validator": "none" },
+    "Phone":               { "label": "Телефон",                                  "placeholder": "телефон",               "validator": "none" },
+    "Email":               { "label": "Email",                                    "placeholder": "эл_почта",              "validator": "none" },
+    "ContractNumber":      { "label": "Номер договора",                          "placeholder": "номер_договора",        "validator": "none" },
+    "ContractDate":        { "label": "Дата договора",                           "placeholder": "дата_договора",         "validator": "date" },
+    "ContractReference":   { "label": "Номер и дата договора",                   "placeholder": "номер_и_дата_договора", "validator": "none" },
+    "AgreementDate":       { "label": "Дата соглашения",                         "placeholder": "дата_соглашения",       "validator": "date" },
+    "TerminationDate":     { "label": "Дата расторжения",                        "placeholder": "дата_расторжения",      "validator": "date" },
+    "ContractLastDay":     { "label": "Последний день действия договора",        "placeholder": "последний_день",        "validator": "date" },
+    "ContractClause":      { "label": "Пункт договора",                          "placeholder": "пункт_договора",        "validator": "none" },
+    "DebtAmount":          { "label": "Сумма задолженности",                     "placeholder": "сумма_задолженности",   "validator": "none" },
+    "ObjectAddress":       { "label": "Адрес объекта",                           "placeholder": "адрес_объекта",         "validator": "none" },
+    "ContractAmount":      { "label": "Сумма договора",                          "placeholder": "сумма_договора",        "validator": "none" }
+  },
+  "groups": {
+    "passport": {
+      "label": "Документ, удостоверяющий личность",
+      "fields": ["FullName", "PassportSeries", "PassportNumber", "PassportIssuedBy", "PassportIssueDate", "PassportDeptCode", "RegistrationAddress"]
+    },
+    "ip": {
+      "label": "Данные ИП",
+      "fields": ["IpName", "Inn", "Ogrnip"]
+    },
+    "legal": {
+      "label": "Данные юрлица",
+      "fields": ["CompanyName", "Inn", "Ogrn", "Kpp", "LegalAddress", "DirectorTitle", "DirectorFullName", "AuthorityBasis"]
+    },
+    "bank": {
+      "label": "Банковские реквизиты",
+      "fields": ["BankAccount", "BankBik", "BankName", "CorrespondentAccount"]
+    },
+    "contacts": {
+      "label": "Контакты",
+      "fields": ["Phone", "Email"]
+    },
+    "contract_meta": {
+      "label": "Данные договора",
+      "fields": ["ContractNumber", "ContractDate", "ObjectAddress", "ContractAmount"]
+    },
+    "termination": {
+      "label": "Расторжение",
+      "fields": ["ContractReference", "AgreementDate", "TerminationDate", "ContractLastDay", "ContractClause", "DebtAmount"]
+    }
+  },
+  "profiles": {
+    "individual_contract": {
+      "groups": ["passport", "contacts", "bank"],
+      "required": ["FullName", "PassportSeries", "PassportNumber", "PassportIssueDate", "PassportDeptCode"]
+    },
+    "individual_addendum": {
+      "groups": ["passport", "contacts", "contract_meta"],
+      "required": ["FullName", "ContractNumber", "ContractDate"]
+    },
+    "individual_termination": {
+      "groups": ["passport", "contacts", "contract_meta"],
+      "required": ["FullName", "ContractNumber", "ContractDate"]
+    },
+    "ip_contract": {
+      "groups": ["ip", "passport", "bank", "contacts"],
+      "required": ["IpName", "Inn", "Ogrnip", "FullName", "BankAccount", "BankBik"]
+    },
+    "ip_addendum": {
+      "groups": ["ip", "passport", "bank", "contacts", "contract_meta"],
+      "required": ["IpName", "Inn", "Ogrnip", "ContractNumber", "ContractDate"]
+    },
+    "ip_termination": {
+      "groups": ["ip", "passport", "contacts", "contract_meta"],
+      "required": ["IpName", "Inn", "Ogrnip", "ContractNumber", "ContractDate"]
+    },
+    "legal_contract": {
+      "groups": ["legal", "bank", "contacts"],
+      "required": ["CompanyName", "Inn", "Ogrn", "Kpp", "LegalAddress", "DirectorFullName", "BankAccount", "BankBik"]
+    },
+    "legal_addendum": {
+      "groups": ["legal", "bank", "contract_meta"],
+      "required": ["CompanyName", "Inn", "Ogrn", "ContractNumber", "ContractDate"]
+    },
+    "legal_termination": {
+      "groups": ["legal", "bank", "contacts", "termination"],
+      "required": ["CompanyName", "Inn", "Ogrn", "Kpp", "LegalAddress", "DirectorTitle", "DirectorFullName", "ContractReference", "AgreementDate", "TerminationDate", "ContractLastDay", "DebtAmount"]
+    }
+  }
+}

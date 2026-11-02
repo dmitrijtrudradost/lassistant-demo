@@ -1,0 +1,20 @@
+{
+  "_comment": [
+    "Локальный Contract NER для вкладки «Шаблоны».",
+    "Пути относительно папки Lassistant.exe (или абсолютные).",
+    "python_path: пусто = автопоиск python / python-venv-contract-ner",
+    "models_root: каталоги ner_model_* для UI «Настройки»",
+    "NER 1.1.1 → Помощник 1.6.1; откат: model_path → models/contract-ner/ner_model_1.0"
+  ],
+  "enabled": true,
+  "python_path": "",
+  "script_path": "scripts/contract_ner/inference_cli.py",
+  "model_path": "models/contract-ner/ner_model_1.1",
+  "models_root": "models/contract-ner",
+  "model_version": "1.1.1",
+  "min_score": 0.05,
+  "auto_accept_score": 0.30,
+  "processing_mode": "production",
+  "timeout_seconds": 180,
+  "apply_postprocess": true
+}

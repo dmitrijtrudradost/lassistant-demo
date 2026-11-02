@@ -1,0 +1,25 @@
+<Application x:Class="Lassistant.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Lassistant.App.Converters"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+        <converters:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibility"/>
+        <converters:BoolToTextWrappingConverter x:Key="BoolToTextWrapping"/>
+        <converters:BoolToHeightConverter x:Key="BoolToHeight"/>
+        <converters:BoolToScrollBarVisibilityConverter x:Key="BoolToScrollBarVisibility"/>
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="Padding" Value="6,4"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+        </Style>
+    </Application.Resources>
+</Application>

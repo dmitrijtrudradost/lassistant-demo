@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <g transform="translate(256 256) scale(0.9) translate(-250 -266)" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M164 64 H316 L408 156 V396 Q408 420 384 420 H164 Q140 420 140 396 V88 Q140 64 164 64 Z"
+          fill="#FFFFFF" stroke="#1B4F8A" stroke-width="28"/>
+    <path d="M316 64 V136 Q316 156 336 156 H408 Z"
+          fill="#2F6FED" stroke="#1B4F8A" stroke-width="28"/>
+    <rect x="188" y="196" width="150" height="30" rx="15" fill="#2F6FED"/>
+    <rect x="188" y="252" width="96" height="30" rx="15" fill="#2F6FED"/>
+    <path d="M334 396 L310 478 L340 464 L358 488 L374 420 Z" fill="#2F6FED" stroke="#FFFFFF" stroke-width="14" paint-order="stroke"/>
+    <path d="M414 396 L438 478 L408 464 L390 488 L374 420 Z" fill="#2F6FED" stroke="#FFFFFF" stroke-width="14" paint-order="stroke"/>
+    <circle cx="374" cy="352" r="76" fill="#1B4F8A" stroke="#FFFFFF" stroke-width="16" paint-order="stroke"/>
+    <circle cx="374" cy="352" r="48" fill="none" stroke="#FFFFFF" stroke-width="12"/>
+    <circle cx="374" cy="352" r="20" fill="#2F6FED"/>
+    <path d="M116 44 Q126 106 188 116 Q126 126 116 188 Q106 126 44 116 Q106 106 116 44 Z"
+          fill="#2F6FED" stroke="#FFFFFF" stroke-width="16" paint-order="stroke"/>
+  </g>
+</svg>
