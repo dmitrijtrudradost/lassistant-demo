@@ -28,3 +28,15 @@ user/
 **/__pycache__/
 *.pyc
 cursor_dialogue_restoration.md
+
+# Локальные настройки окружения
+.env
+.env.*
+!.env.example
+
+# Дополнительные виртуальные окружения Python
+.venv/
+venv/
+
+# Локальные журналы
+*.log
